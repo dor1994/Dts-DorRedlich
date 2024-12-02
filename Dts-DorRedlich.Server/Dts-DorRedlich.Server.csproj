@@ -21,6 +21,7 @@
     <ProjectReference Include="..\dts-dorredlich.client\dts-dorredlich.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\UserService\UserService.csproj" />
   </ItemGroup>
 
 </Project>
