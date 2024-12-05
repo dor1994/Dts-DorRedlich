@@ -1,4 +1,5 @@
-﻿using Data.Enums;
+﻿using Data.DtoModels;
+using Data.Enums;
 using Data.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Data.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        public Task<EnumError> LoginAsync(UserModel user);
+        public Task<(EnumResponse enumResponse, User userEntity)> LoginAsync(UserModel user);
         public Task<bool> SingUpAsync(UserModel user);
     }
 }

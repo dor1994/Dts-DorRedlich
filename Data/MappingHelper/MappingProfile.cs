@@ -14,6 +14,7 @@ namespace Data.MappingHelper
         public MappingProfile()
         {
             CreateMap<UserModel, User>();
+            CreateMap<CustomerModel, QueueEntry>();
         }
     }
 }

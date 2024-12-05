@@ -18,20 +18,20 @@ namespace Data.Repositories
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<EnumError> LoginAsync(UserModel user)
+        public async Task<(EnumResponse enumResponse, User userEntity)> LoginAsync(UserModel user)
         {
 
             var userEntity = await _unitOfWork.FirstOrDefaultAsync<User>(x => x.Username == user.Username);
 
             if(userEntity == null)
             {
-               return EnumError.UserNotFound;
+               return (EnumResponse.UserNotFound, userEntity);
             }
 
-            //else if (userEntity != null && !BCrypt.Net.BCrypt.Verify(user.Password, userEntity.PasswordHash))
-            //    return EnumError.WorngPassword;
+            else if (userEntity != null && !BCrypt.Net.BCrypt.Verify(user.Password, userEntity.PasswordHash))
+                return (EnumResponse.WorngPassword, userEntity);
 
-            return EnumError.UserFound;
+            return (EnumResponse.UserFound, userEntity);
         }
 
         public async Task<bool> SingUpAsync(UserModel user)

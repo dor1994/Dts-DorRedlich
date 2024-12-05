@@ -36,15 +36,12 @@ const useApi = () => {
    */
   const postAsync = useCallback(async (controller, endpoint = "", body = {}) => {
     
-    console.log("body: ", body)
-    setLoading(true);
-    setError(null);
 
     const url = `${baseApiUrl}/${controller}${endpoint}`;
-    console.log("url: ", url);
+
     try {
       const response = await axios.post(`${baseApiUrl}/${controller}${endpoint}`, body);
-      console.log("response:", response)
+
       return response.data;
     } catch (err) {
       setError(err);
@@ -62,8 +59,6 @@ const useApi = () => {
    * @returns {Promise<any>}
    */
   const putAsync = useCallback(async (controller, endpoint = "", body = {}) => {
-    setLoading(true);
-    setError(null);
 
     try {
       const response = await axios.put(`${baseApiUrl}/${controller}${endpoint}`, body);
@@ -85,8 +80,6 @@ const useApi = () => {
    * @returns {Promise<any>}
    */
  const deleteAsync = useCallback(async (controller, endpoint = "", params = {}) => {
-    setLoading(true);
-    setError(null);
 
     try {
       const response = await axios.delete(`${baseApiUrl}/${controller}${endpoint}`, { params });

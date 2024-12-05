@@ -50,15 +50,6 @@ namespace Dts_DorRedlich.Server.Controllers
         {
             var response = await _userService.SingUp(request);
 
-            var token = await GenerateToken(request);
-
-            Response.Cookies.Append("AuthToken", token, new CookieOptions
-            {
-                HttpOnly = true,  // Prevents access to the cookie via JavaScript
-                Secure = true,    // Ensures the cookie is sent over HTTPS
-                SameSite = SameSiteMode.Strict
-            });
-
             return Ok(response);
         }
 

@@ -9,6 +9,8 @@ using Data.MappingHelper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using CustomersBarBer.CustomerServices.Interfaces;
+using CustomersBarBer.CustomerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +18,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
         builder => builder
-            .WithOrigins("https://localhost:5174") // Allow only your frontend origin
+            .WithOrigins("https://localhost:5173") // Allow only your frontend origin
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()); // if you need to allow credentials
@@ -44,6 +46,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IUserService, UserServices>();
 
 

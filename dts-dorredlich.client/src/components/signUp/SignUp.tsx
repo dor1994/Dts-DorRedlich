@@ -4,21 +4,31 @@ import useApi from "../../apiService/api";
 import { UserModel } from "../../models/userModel";
 import './SignUp.css';
 import { UserService } from "../../apiService/userService";
+import { useNavigate } from "react-router-dom";
 
 export default function SignUpPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [firstName, setFirstName] = useState("");
     const [message, setMessage] = useState("");
+    const [error, setError] = useState(false);
+    const navigate = useNavigate();
 
-    const { postAsync, loading, error } = useApi(); // Replace with your API base URL
+    const { postAsync} = useApi(); // Replace with your API base URL
 
     const handleSignUp = async () => {
         const user = new UserModel(username, password, firstName);
         
         try {
             const data = await postAsync(UserService.USER_CONTROLLER, UserService.SIGNUP, user); // Use postAsync directly
-        
+            if(!data.status){
+                console.log(data.enumMessage)
+                setMessage(data.message);
+                setError(true);
+            }
+            else {
+                navigate("/");
+            }
             setMessage(`Sign Up successful! Welcome, ${data.firstName}`);
         } catch (err) {
             setMessage("Sign Up failed. Please check your credentials.");
@@ -59,8 +69,7 @@ export default function SignUpPage() {
             <button onClick={handleSignUp}>
                 SignUp
             </button>
-        {/* {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
-        {message && <p>{message}</p>} */}
+            {error && <p style={{ color: "red" }}>Error: {message}</p>}
       </div>
     );
 

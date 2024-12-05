@@ -1,10 +1,14 @@
 
 import React, { useEffect, useState } from "react";
 import useApi from "../../apiService/api";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import './CustomersListPage.css';
 import { UserModel } from "../../models/userModel";
 import { EnumError, UserService } from "../../apiService/userService";
+import { Table } from "../Table/Table";
+import { Modal } from "../PopUp/Modal";
+import { CustomerService } from "../../apiService/customerService";
+import { CustomerModel } from "../../models/customerModel";
 
 export default function CustomersListPage() {
     const [queue, setQueue] = useState([]); // Holds the queue data
@@ -18,21 +22,72 @@ export default function CustomersListPage() {
 
     const { getAsync, postAsync } = useApi();
 
+    const location = useLocation();
+    const { id } = location.state || {};
     useEffect(() => {
         
       }, []);
 
-      const handleSignUp = async () => {
-        // const user = new UserModel(username, password, firstName);
-        
-        try {
-            const data = await postAsync(UserService.USER_CONTROLLER, UserService.SIGNUP, {}); // Use postAsync directly
-        
-            setMessage(`Sign Up successful! Welcome, ${data.firstName}`);
-        } catch (err) {
-            setMessage("Sign Up failed. Please check your credentials.");
-        }
-    };
+
+    const [modalOpen, setModalOpen] = useState(false);
+  const [rows, setRows] = useState([
+    {
+      id: "1",
+      customerId: "1",
+      customerName: "dor",
+      requestedTime: "11/12/2024"
+    },
+    {
+      id: "2",
+      customerId: "2",
+      customerName: "dor1",
+      requestedTime: "11/12/2024"
+    },
+    {
+      id: "3",
+      customerId: "3",
+      customerName: "dor2",
+      requestedTime: "11/12/2024"
+    },
+  ]);
+  const [rowToEdit, setRowToEdit] = useState(null);
+
+  const handleDeleteRow = (targetIndex) => {
+    setRows(rows.filter((_, idx) => idx !== targetIndex));
+  };
+
+  const handleEditRow = (idx) => {
+    setRowToEdit(idx);
+
+    setModalOpen(true);
+  };
+
+  const handleSubmit = async (newRow) => {
+
+    const customer = new CustomerModel(newRow.customerId, newRow.customerName, newRow.requestedTime);
+    
+    try {
+      const data = await postAsync(CustomerService.CUSTOMER_CONTROLLER, CustomerService.ADD_NEW_QUEUE, customer); // Use postAsync directly
+      console.log("data: ", data)
+      if(data.status){
+        rowToEdit === null
+        ? setRows([...rows, newRow])
+        : setRows(
+            rows.map((currRow, idx) => {
+              if (idx !== rowToEdit) return currRow;
+  
+              return newRow;
+            })
+          );
+      }
+
+      setMessage(`Sign Up successful! Welcome, ${data.firstName}`);
+  } catch (err) {
+      setMessage("Sign Up failed. Please check your credentials.");
+  }
+
+   
+  };
 
     const addToQueue = async () => {
         // if (!customerName || !requestedTime) {
@@ -58,63 +113,24 @@ export default function CustomersListPage() {
 
     return (
         <div className="form-div">
-            <h1>Login</h1>
-            <div>
-      <h1>Barbershop Queue</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {loading && <p>Loading...</p>}
-
-      <table style={{ width: "100%", marginTop: "20px" }}>
-        <thead>
-          <tr>
-            <th>Customer Name</th>
-            <th>Requested Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {queue.length > 0 ? (
-            queue.map((entry, index) => (
-              <tr key={index}>
-                <td>{}</td>
-                <td>{}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td  style={{ textAlign: "center" }}>
-                No requests in the queue
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-
-            <h2>Add New Queue Request</h2>
-            <form
-                onSubmit={(e) => {
-                e.preventDefault();
-                addToQueue();
-                }}
-            >
-                <div>
-                <label>Customer Name: </label>
-                <input
-                    type="text"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                />
-                </div>
-                <div>
-                <label>Requested Time: </label>
-                <input
-                    type="text"
-                    value={requestedTime}
-                    onChange={(e) => setRequestedTime(e.target.value)}
-                />
-                </div>
-                <button type="submit">Add to Queue</button>
-            </form>
+            <h1>Barbershop Queue</h1>
+            <div className="table-wrapper">
+              <Table rows={rows} id={id} deleteRow={handleDeleteRow} editRow={handleEditRow} />
+              <button onClick={() => setModalOpen(true)} className="btn">
+                Add
+              </button>
             </div>
+            {modalOpen && (
+              <Modal
+                id={id}
+                closeModal={() => {
+                  setModalOpen(false);
+                  setRowToEdit(null);
+                }}
+                onSubmit={handleSubmit}
+                defaultValue={rowToEdit !== null && rows[rowToEdit]}
+              />
+            )}
         </div>
     );
 

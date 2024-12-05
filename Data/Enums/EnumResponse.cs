@@ -6,11 +6,15 @@ using System.Threading.Tasks;
 
 namespace Data.Enums
 {
-    public enum EnumError
+    public enum EnumResponse
     {
         UserFound = 0,
         UserNotFound = 1,
         WorngPassword = 2,
-        UserNameExist = 3
+        UserNameExist = 3,
+        DateRequestExist = 4,
+        CustomerAdded = 5,
+        CustomerDeleted = 6,
+        CustomerUpdate = 7,
     }
 }

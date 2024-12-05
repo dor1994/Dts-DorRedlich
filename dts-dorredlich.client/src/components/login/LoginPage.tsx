@@ -17,17 +17,17 @@ export default function LoginPage() {
 
     const handleLogin = async () => {
         const user = new UserModel(username, password, "");
-        
+
         try {
         const data = await postAsync(UserService.USER_CONTROLLER, UserService.LOGIN, user); // Call the API
-        if(data.enumMessage === EnumError.WorngPassword){
-            console.log(data.enumMessage)
+        if(!data.status){
             setMessage(data.message);
             setError(true);
         }
-        else if(data.enumMessage === EnumError.UserFound){
-            navigate("/customersList");
-        }
+        else {
+            const id = data.data.id;
+            navigate("/customersList", { state: { id } }); 
+               }
         } catch (err) {
         setMessage("Login failed. Please check your credentials.");
         }

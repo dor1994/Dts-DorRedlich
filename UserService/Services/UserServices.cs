@@ -17,28 +17,29 @@ namespace UserService.Services
         {
             _userRepository = userRepository;
         }
-        public async Task<ApiResponse<UserModel, EnumError>> Login(UserModel user)
+        public async Task<ApiResponse<UserModel, EnumResponse>> Login(UserModel user)
         {
-            ApiResponse<UserModel, EnumError> response = new ApiResponse<UserModel, EnumError>();
-            var isUserAdd = await _userRepository.LoginAsync(user);
+            ApiResponse<UserModel, EnumResponse> response = new ApiResponse<UserModel, EnumResponse>();
+            var result = await _userRepository.LoginAsync(user);
 
-            switch (isUserAdd)
+            switch (result.enumResponse)
             {
-                case EnumError.UserFound:
+                case EnumResponse.UserFound:
+                    user.Id = result.userEntity.Id;
                     response.Status = true;
                     response.Message = "User Login successfully!";
                     response.Data = user;
-                    response.EnumMessage = EnumError.UserFound;
+                    response.EnumMessage = EnumResponse.UserFound;
                     break;
-                case EnumError.UserNotFound:
+                case EnumResponse.UserNotFound:
                     response.Status = false;
                     response.Message = "Login user failed - user don't exist";
-                    response.EnumMessage = EnumError.UserNotFound;
+                    response.EnumMessage = EnumResponse.UserNotFound;
                     break;
-                case EnumError.WorngPassword:
+                case EnumResponse.WorngPassword:
                     response.Status = false;
                     response.Message = "Login user failed - Worng Password";
-                    response.EnumMessage = EnumError.WorngPassword;
+                    response.EnumMessage = EnumResponse.WorngPassword;
                     break;
                 default:
                     break;
@@ -47,9 +48,9 @@ namespace UserService.Services
             return response;
         }
 
-        public async Task<ApiResponse<UserModel, EnumError>> SingUp(UserModel user)
+        public async Task<ApiResponse<UserModel, EnumResponse>> SingUp(UserModel user)
         {
-            ApiResponse<UserModel, EnumError> response = new ApiResponse<UserModel, EnumError>();
+            ApiResponse<UserModel, EnumResponse> response = new ApiResponse<UserModel, EnumResponse>();
             var isUserAdd = await _userRepository.SingUpAsync(user);
 
             if (isUserAdd)
@@ -61,7 +62,7 @@ namespace UserService.Services
 
             response.Status = false;
             response.Message = "Registered user failed - the userName is already exist";
-            response.EnumMessage = EnumError.UserNameExist;
+            response.EnumMessage = EnumResponse.UserNameExist;
 
             return response;
         }

@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CustomersBarBer\CustomersBarBer.csproj" />
     <ProjectReference Include="..\dts-dorredlich.client\dts-dorredlich.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

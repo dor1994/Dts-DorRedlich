@@ -10,7 +10,7 @@ namespace UserService.Services.Interfaces
 {
     public interface IUserService
     {
-        public Task<ApiResponse<UserModel, EnumError>> Login(UserModel user);
-        public Task<ApiResponse<UserModel, EnumError>> SingUp(UserModel user);
+        public Task<ApiResponse<UserModel, EnumResponse>> Login(UserModel user);
+        public Task<ApiResponse<UserModel, EnumResponse>> SingUp(UserModel user);
     }
 }

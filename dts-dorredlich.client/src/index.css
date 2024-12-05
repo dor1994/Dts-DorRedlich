@@ -46,6 +46,7 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
@@ -65,6 +66,12 @@ button:focus-visible {
   flex-direction: column;
   text-align: left;
   gap: 4px;
+}
+
+input {
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid;
 }
 
 @media (prefers-color-scheme: light) {
