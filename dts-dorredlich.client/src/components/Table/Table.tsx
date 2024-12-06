@@ -4,45 +4,50 @@ import { BsFillTrashFill, BsFillPencilFill } from "react-icons/bs";
 
 import "./Table.css";
 
-export const Table = ({ rows, id, deleteRow, editRow }) => {
+export const Table = ({ rows, id, deleteRow, editRow, showDetail }) => {
   return (
-    <div >
+    <div>
       <table className="table">
         <thead>
           <tr>
-          <th>Customer Name</th>
-          <th className="expand">Requested Time</th>
+            <th>Customer Name</th>
+            <th className="expand">Requested Date</th>
+            <th className="expand">Requested Time</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, idx) => {
-            
-            return (
-              <tr key={idx}>
-                <td>{row.customerName}</td>
-                <td className="expand">{row.requestedTime}</td>
-                <td>
-                  {/* <span >
-                    {row.firstName}
-                  </span> */}
-                </td>
-                <td  className="fit">
-                    {row.customerId == id && (
-                        <span className="actions">
+          {rows.length > 0 &&
+            rows.map((row, idx) => {
+              const [date, time] = row.requestedTime.split("T");
+              return (
+                <tr
+                  key={idx}
+                  onClick={() => showDetail(idx, row)}
+                  className={`content ${id != row.customerId ? "disabled" : ""}`}
+                >
+                  <td>{row.customerName}</td>
+                  <td className="expand">{date}</td>
+                  <td className="expand">{time}</td>
+                  <td
+                    className="fit"
+                    onClick={(e) => e.stopPropagation()} // Prevent click event from propagating to <tr>
+                  >
+                    {row.customerId === id && (
+                      <span className="actions">
                         <BsFillTrashFill
-                        className="delete-btn"
-                        onClick={() => deleteRow(idx)}
+                          className="delete-btn"
+                          onClick={() => deleteRow(row.id)}
                         />
                         <BsFillPencilFill
-                        className="edit-btn"
-                        onClick={() => editRow(idx)}
+                          className="edit-btn"
+                          onClick={() => editRow(idx, row)}
                         />
-                  </span>)}
-                  
-                </td>
-              </tr>
-            );
-          })}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </div>

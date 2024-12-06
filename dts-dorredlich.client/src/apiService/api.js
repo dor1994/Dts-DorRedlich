@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 
 const useApi = () => {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
     const baseApiUrl =  "https://localhost:7168/api"
   /**
@@ -13,18 +12,16 @@ const useApi = () => {
    * @returns {Promise<any>}
    */
   const getAsync = useCallback(async (controller, endpoint = "", params = {}) => {
-    setLoading(true);
-    setError(null);
 
+    const url = `${baseApiUrl}/${controller}${endpoint}`;
     try {
       const response = await axios.get(`${baseApiUrl}/${controller}${endpoint}`, { params });
+      
       return response.data;
     } catch (err) {
       setError(err);
       throw err;
-    } finally {
-      setLoading(false);
-    }
+    } 
   });
 
   /**
@@ -36,9 +33,6 @@ const useApi = () => {
    */
   const postAsync = useCallback(async (controller, endpoint = "", body = {}) => {
     
-
-    const url = `${baseApiUrl}/${controller}${endpoint}`;
-
     try {
       const response = await axios.post(`${baseApiUrl}/${controller}${endpoint}`, body);
 
@@ -46,9 +40,7 @@ const useApi = () => {
     } catch (err) {
       setError(err);
       throw err;
-    } finally {
-      setLoading(false);
-    }
+    } 
   });
 
    /**
@@ -66,9 +58,7 @@ const useApi = () => {
     } catch (err) {
       setError(err);
       throw err;
-    } finally {
-      setLoading(false);
-    }
+    } 
   }, [baseApiUrl]);
 
 
@@ -82,14 +72,12 @@ const useApi = () => {
  const deleteAsync = useCallback(async (controller, endpoint = "", params = {}) => {
 
     try {
-      const response = await axios.delete(`${baseApiUrl}/${controller}${endpoint}`, { params });
+      const response = await axios.delete(`${baseApiUrl}/${controller}${endpoint}/${params}`);
       return response.data;
     } catch (err) {
       setError(err);
       throw err;
-    } finally {
-      setLoading(false);
-    }
+    } 
   }, [baseApiUrl]);
 
   return {

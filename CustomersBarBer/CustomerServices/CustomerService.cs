@@ -30,8 +30,9 @@ namespace CustomersBarBer.CustomerServices
             {
                 case EnumResponse.CustomerAdded:
                     customer.Id = result.customerEntity.Id;
+                    customer.CreatedAt = result.customerEntity.CreatedAt;
                     response.Status = true;
-                    response.Message = "User Login successfully!";
+                    response.Message = "Customer Added successfully!";
                     response.Data = customer;
                     response.EnumMessage = EnumResponse.CustomerAdded;
                     break;
@@ -47,24 +48,91 @@ namespace CustomersBarBer.CustomerServices
 
             return response;
 
-
-            throw new NotImplementedException();
         }
 
-        public Task<ApiResponse<bool, EnumResponse>> DeleteCustomerAsync(int id)
+        public async Task<ApiResponse<bool, EnumResponse>> DeleteCustomerAsync(int id)
         {
-            throw new NotImplementedException();
+            ApiResponse<bool, EnumResponse> response = new ApiResponse<bool, EnumResponse>();
+
+            var isDelete = await _customerRepository.DeleteCustomerAsync(id);
+
+            if (isDelete)
+            {
+                response.Status = isDelete;
+                response.Data = isDelete;
+                response.Message = "Delete successfully";
+            }
+
+            else
+            {
+                response.Status = isDelete;
+                response.Data = isDelete;
+                response.Message = "Failed to delete queue";
+            }
+
+            return response;
         }
 
-        public Task<ApiResponse<List<CustomerModel>, EnumResponse>> GetAllCustomersAsync()
+        public async Task<ApiResponse<List<CustomerModel>, EnumResponse>> GetFilterCustomersAsync(string? customerName, DateTime? requestedTime)
         {
-            var queueList = _customerRepository.GetAllCustomersAsync();
-            throw new NotImplementedException();
+            var queueList = await _customerRepository.GetFilterCustomersAsync(customerName, requestedTime);
+
+            ApiResponse<List<CustomerModel>, EnumResponse> response = new ApiResponse<List<CustomerModel>, EnumResponse>();
+
+            if(queueList != null)
+            {
+                List<CustomerModel> clientRestaurants = queueList
+                                .Select(dbModel => new CustomerModel
+                                {
+                                    Id = dbModel.Id,
+                                    CustomerId = dbModel.CustomerId,
+                                    CustomerName = dbModel.CustomerName,
+                                    CreatedAt = dbModel.CreatedAt,
+                                    RequestedTime = dbModel.RequestedTime,
+                                })
+                                .ToList();
+
+                response.Status = true;
+                response.Message = "successfully!";
+                response.Data = clientRestaurants;
+
+                return response;
+
+            }
+
+            response.Status = false;
+            response.Message = "Somthing get worng!";
+            response.Data = null;
+
+            return response;
         }
 
-        public Task<ApiResponse<CustomerModel, EnumResponse>> UpdateCustomerAsync(CustomerModel customer)
+        public async Task<ApiResponse<CustomerModel, EnumResponse>> UpdateCustomerAsync(CustomerModel customer)
         {
-            throw new NotImplementedException();
+            ApiResponse<CustomerModel, EnumResponse> response = new ApiResponse<CustomerModel, EnumResponse>();
+
+            var result = await _customerRepository.UpdateCustomerAsync(customer);
+
+            switch (result.enumResponse)
+            {
+                case EnumResponse.CustomerUpdate:
+                    customer.CreatedAt = result.customerEntity.CreatedAt;
+                    response.Status = true;
+                    response.Message = "Customer Update successfully!";
+                    response.Data = customer;
+                    response.EnumMessage = EnumResponse.CustomerAdded;
+                    break;
+                case EnumResponse.CustomerRequestNotFound:
+                    response.Status = false;
+                    response.Message = "Update customer failed - Clould not found original queue";
+                    response.EnumMessage = EnumResponse.CustomerRequestNotFound;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return response;
         }
     }
 }

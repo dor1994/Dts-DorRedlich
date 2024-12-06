@@ -17,21 +17,23 @@ export default function SignUpPage() {
     const { postAsync} = useApi(); // Replace with your API base URL
 
     const handleSignUp = async () => {
-        const user = new UserModel(username, password, firstName);
-        
-        try {
-            const data = await postAsync(UserService.USER_CONTROLLER, UserService.SIGNUP, user); // Use postAsync directly
-            if(!data.status){
-                console.log(data.enumMessage)
-                setMessage(data.message);
-                setError(true);
+        if(username != "" && password != "" && firstName != ""){
+            const user = new UserModel(username, password, firstName);
+            
+            try {
+                const data = await postAsync(UserService.USER_CONTROLLER, UserService.SIGNUP, user); // Use postAsync directly
+                if(!data.status){
+                    setMessage(data.message);
+                    setError(true);
+                }
+                else {
+                    navigate("/");
+                }
+                setMessage(`Sign Up successful! Welcome, ${data.firstName}`);
+            } catch (err) {
+                setMessage("Sign Up failed. Please check your credentials.");
             }
-            else {
-                navigate("/");
-            }
-            setMessage(`Sign Up successful! Welcome, ${data.firstName}`);
-        } catch (err) {
-            setMessage("Sign Up failed. Please check your credentials.");
+
         }
     };
 

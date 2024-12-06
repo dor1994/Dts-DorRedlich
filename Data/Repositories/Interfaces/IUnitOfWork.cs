@@ -14,7 +14,7 @@ namespace Data.Repositories.Interfaces
 
         Task<bool> CheckUsernameExistsAsync(string userName);
 
-        TDestination MapperModelToDto<TSource, TDestination>(TSource model);
+        TDestination Mapper<TSource, TDestination>(TSource model);
         Task<TEntity> FirstOrDefaultAsync<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class;
 
     }

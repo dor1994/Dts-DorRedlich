@@ -14,5 +14,6 @@ namespace Data.DtoModels
         public string? Username { get; set; }
         public string? PasswordHash { get; set; }
         public string? FirstName { get; set; }
+        public virtual ICollection<QueueEntry>? QueueEntries { get; set; }
     }
 }

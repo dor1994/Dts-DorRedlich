@@ -22,14 +22,24 @@ namespace Data.Repositories
         {
 
             var userEntity = await _unitOfWork.FirstOrDefaultAsync<User>(x => x.Username == user.Username);
-
-            if(userEntity == null)
+            try
             {
-               return (EnumResponse.UserNotFound, userEntity);
+
+                if (userEntity == null)
+                {
+                    return (EnumResponse.UserNotFound, userEntity);
+                }
+
+                else if (userEntity != null && !BCrypt.Net.BCrypt.Verify(user.Password, userEntity.PasswordHash))
+                    return (EnumResponse.WorngPassword, userEntity);
+            }
+            catch (Exception e)
+            {
+
+                throw e; //Write the error to logger
             }
 
-            else if (userEntity != null && !BCrypt.Net.BCrypt.Verify(user.Password, userEntity.PasswordHash))
-                return (EnumResponse.WorngPassword, userEntity);
+            
 
             return (EnumResponse.UserFound, userEntity);
         }
@@ -42,7 +52,7 @@ namespace Data.Repositories
             {
                 if (!isExist)
                 {
-                    User userEntity = _unitOfWork.MapperModelToDto<UserModel, User>(user);
+                    User userEntity = _unitOfWork.Mapper<UserModel, User>(user);
                     userEntity.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
                    await _unitOfWork.Repository<User>().AddAsync(userEntity);

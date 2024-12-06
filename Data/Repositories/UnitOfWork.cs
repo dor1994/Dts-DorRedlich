@@ -59,7 +59,7 @@ namespace Data.Repositories
             return result1;
         }
 
-        public TDestination MapperModelToDto<TSource, TDestination>(TSource model)
+        public TDestination Mapper<TSource, TDestination>(TSource model)
         {
             return _mapper.Map<TDestination>(model);
         }

@@ -1,6 +1,8 @@
 ﻿using CustomersBarBer.CustomerServices.Interfaces;
+using Data.Enums;
 using Data.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Dts_DorRedlich.Server.Controllers
 {
@@ -15,31 +17,38 @@ namespace Dts_DorRedlich.Server.Controllers
             _customerService = customerService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllCustomers()
+        [HttpGet("getFilteredCustomers")]
+        public async Task<IActionResult> GetFilteredCustomers([FromQuery] string? customerName, [FromQuery] DateTime? requestedTime)
         {
-            var customers = await _customerService.GetAllCustomersAsync();
+            var customers = await _customerService.GetFilterCustomersAsync(customerName, requestedTime);
             return Ok(customers);
         }
 
         [HttpPost("add")]
         public async Task<IActionResult> AddCustomer([FromBody] CustomerModel customer)
         {
+            if(customer.RequestedTime < DateTime.Now)
+            {
+                return Ok(new ApiResponse<bool, EnumResponse> () { Status = false, Message = "Requested Time Must be Valid!"});
+            }
             return Ok(await _customerService.AddCustomerAsync(customer));
         }
 
-        [HttpPut]
+        [HttpPut("update")]
         public async Task<IActionResult> UpdateCustomer([FromBody] CustomerModel customer)
         {
-            await _customerService.UpdateCustomerAsync(customer);
-            return Ok();
+            if (customer.RequestedTime < DateTime.Now)
+            {
+                return Ok(new ApiResponse<bool, EnumResponse>() { Status = false, Message = "Requested Time Must be Valid!" });
+            }
+            return Ok(await _customerService.UpdateCustomerAsync(customer));
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
-            await _customerService.DeleteCustomerAsync(id);
-            return Ok();
+            
+            return Ok(await _customerService.DeleteCustomerAsync(id));
         }
     }
-    }
+}

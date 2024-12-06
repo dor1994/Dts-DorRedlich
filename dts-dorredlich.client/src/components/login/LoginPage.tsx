@@ -16,20 +16,23 @@ export default function LoginPage() {
     const { postAsync } = useApi();
 
     const handleLogin = async () => {
-        const user = new UserModel(username, password, "");
+        if(username != "" && password != ""){
+            const user = new UserModel(username, password, "");
+    
+            try {
+            const data = await postAsync(UserService.USER_CONTROLLER, UserService.LOGIN, user); // Call the API
+            if(!data.status){
+                setMessage(data.message);
+                setError(true);
+            }
+            else {
+                const id = data.data.id;
+                navigate("/customersList", { state: { id } }); 
+                   }
+            } catch (err) {
+            setMessage("Login failed. Please check your credentials.");
+            }
 
-        try {
-        const data = await postAsync(UserService.USER_CONTROLLER, UserService.LOGIN, user); // Call the API
-        if(!data.status){
-            setMessage(data.message);
-            setError(true);
-        }
-        else {
-            const id = data.data.id;
-            navigate("/customersList", { state: { id } }); 
-               }
-        } catch (err) {
-        setMessage("Login failed. Please check your credentials.");
         }
     };
 

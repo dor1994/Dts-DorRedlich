@@ -13,5 +13,14 @@ namespace Data.DtoModels
 
         public DbSet<User> Users { get; set; }
         public DbSet<QueueEntry> QueueEntries { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<QueueEntry>()
+                .HasOne(q => q.User) // A QueueEntry has one User
+                .WithMany(u => u.QueueEntries) // A User has many QueueEntries
+                .HasForeignKey(q => q.CustomerId) // Foreign key in QueueEntry
+                .OnDelete(DeleteBehavior.Cascade); // Optional: cascade delete
+        }
     }
 }

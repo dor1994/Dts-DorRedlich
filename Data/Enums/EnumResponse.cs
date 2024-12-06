@@ -16,5 +16,7 @@ namespace Data.Enums
         CustomerAdded = 5,
         CustomerDeleted = 6,
         CustomerUpdate = 7,
+        CustomerRequestNotFound = 8,
+        UserRegistered = 9,
     }
 }

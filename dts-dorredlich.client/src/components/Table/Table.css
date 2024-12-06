@@ -45,28 +45,23 @@
     color: white;
   }
   
-  .label-draft {
-    background-color: #777;
-  }
-  
-  .label-first {
-    background-color: #42a942;
-  }
-  
-  .label-error {
-    background-color: #d9534f;
-  }
-  
-  .actions {
-    display: flex;
-    justify-content: space-around;
-  }
-  
-  .actions svg {
-    cursor: pointer;
-  }
-  
   .delete-btn {
     color: #e10d05;
     margin-right: 5px;
+  }
+
+  .content {
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+  }
+
+  .content.disabled {
+    pointer-events: none; /* Prevent interactions */
+    cursor: not-allowed; /* Show the disabled cursor */
+  }
+
+  .fit {
+    position: relative;
+    z-index: 2;
   }

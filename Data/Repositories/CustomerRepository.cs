@@ -20,35 +20,95 @@ namespace Data.Repositories
 
         public async Task<(EnumResponse enumResponse, QueueEntry customerEntity)> AddCustomerAsync(CustomerModel customer)
         {
-            var queueEntity = await _unitOfWork.FirstOrDefaultAsync<QueueEntry>(x => x.RequestedTime == customer.RequestedTime);
-            var isCustomerAdded = 0;
-            if (queueEntity == null)
+
+            try
             {
-                QueueEntry queueEntryEntity = _unitOfWork.MapperModelToDto<CustomerModel, QueueEntry>(customer);
+                var queueEntity = await _unitOfWork.FirstOrDefaultAsync<QueueEntry>(x => x.RequestedTime == customer.RequestedTime);
+                var isCustomerAdded = 0;
+                if (queueEntity == null)
+                {
+                    QueueEntry queueEntryEntity = _unitOfWork.Mapper<CustomerModel, QueueEntry>(customer);
+                    queueEntryEntity.CreatedAt = DateTime.Now;
+                    
+                    await _unitOfWork.Repository<QueueEntry>().AddAsync(queueEntryEntity);
+                    
+                    isCustomerAdded = await _unitOfWork.SaveChangesAsync();
+                    return (EnumResponse.CustomerAdded, queueEntryEntity);
 
-                await _unitOfWork.Repository<QueueEntry>().AddAsync(queueEntity);
-                isCustomerAdded = await _unitOfWork.SaveChangesAsync();
-                return (EnumResponse.CustomerAdded, queueEntity);
-
+                }
             }
+            catch (Exception e)
+            {
 
-            return (EnumResponse.DateRequestExist, new QueueEntry());
+                throw e; //Write the error to logger
+            }
+           
+
+            return (EnumResponse.DateRequestExist, null);
         }
 
         public async Task<bool> DeleteCustomerAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var entity = await _unitOfWork.Repository<QueueEntry>().GetByIdAsync(id);
+               
+                _unitOfWork.Repository<QueueEntry>().Delete(entity);
+                
+                int isCustomerDeleted = await _unitOfWork.SaveChangesAsync();
+
+                return isCustomerDeleted > 0;
+
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+            
         }
 
-        public async Task<List<QueueEntry>> GetAllCustomersAsync()
+        public async Task<List<QueueEntry>> GetFilterCustomersAsync(string? customerName, DateTime? requestedTime)
         {
-            var queueList = await _unitOfWork.Repository<QueueEntry>().GetAllAsync();
-            return queueList.ToList();
+            try
+            {
+                var queueList = await _unitOfWork.Repository<QueueEntry>().GetAllAsync();
+
+                return queueList.ToList();
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+            
         }
 
-        public async Task<bool> UpdateCustomerAsync(CustomerModel customer)
+        public async Task<(EnumResponse enumResponse, QueueEntry customerEntity)> UpdateCustomerAsync(CustomerModel customer)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var queueEntity = await _unitOfWork.FirstOrDefaultAsync<QueueEntry>(x => x.Id == customer.Id);
+                var isCustomerAdded = 0;
+                if (queueEntity != null)
+                {
+                    queueEntity.RequestedTime = customer.RequestedTime;
+                    queueEntity.CreatedAt = DateTime.Now;
+
+                    _unitOfWork.Repository<QueueEntry>().Update(queueEntity);
+
+                    isCustomerAdded = await _unitOfWork.SaveChangesAsync();
+                    return (EnumResponse.CustomerUpdate, queueEntity);
+
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e; //Write the error to logger
+            }
+
+            return (EnumResponse.CustomerRequestNotFound, null);
         }
     }
 }
