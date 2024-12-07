@@ -1,15 +1,9 @@
 ﻿using AutoMapper;
 using Data.DtoModels;
 using Data.Repositories.Interfaces;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Repositories
 {
@@ -42,13 +36,11 @@ namespace Data.Repositories
 
         public async Task<bool> CheckUsernameExistsAsync(string userName)
         {
-            var result1 = false;
+            var result = false;
             try
             {
-                var parameters = new SqlParameter("@Username", userName);
-                var result = (await _context.Database
-                   .ExecuteSqlRawAsync("EXEC CheckUsernameExists @Username",
-                        new[] { new SqlParameter("@Username", userName) }));
+                result = await _context.Users.AnyAsync(u => u.Username == userName);
+
             }
             catch (Exception ex)
             {
@@ -56,7 +48,47 @@ namespace Data.Repositories
                 throw ex;
             }
 
-            return result1;
+            return result;
+
+        }
+
+        public async Task<List<QueueEntry>> GetAllQueueEntriesAsync(string? customerName, DateTime? requestedTime)
+        {
+            try
+            {
+                //I Create this PROCEDURE In The DB and I used the abilities of Entity Framework the execute the PROCEDURE for every filter request or defult list
+
+                //CREATE PROCEDURE GetBarbershopQueue
+                //    @RequestedTime DATETIME = NULL,
+                //    @CustomerName NVARCHAR(100) = NULL
+                //AS
+                //BEGIN
+                //    SELECT
+                //        Id,
+                //        CustomerId,  --Ensure this column is included
+                //        CustomerName,
+                //        RequestedTime,
+                //        CreatedAt
+                //    FROM
+                //        QueueEntries
+                //    WHERE
+                //        (@RequestedTime IS NULL OR CONVERT(DATE, RequestedTime) = CONVERT(DATE, @RequestedTime))
+                //        AND(@CustomerName IS NULL OR CustomerName LIKE '%' + @CustomerName + '%')
+                //    ORDER BY
+                //        RequestedTime ASC;
+                //                END;
+
+                var result = await _context.QueueEntries
+                    .FromSqlInterpolated($"EXEC GetBarbershopQueue @RequestedTime={requestedTime}, @CustomerName={customerName}")
+                    .ToListAsync();
+
+                return result;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
         }
 
         public TDestination Mapper<TSource, TDestination>(TSource model)

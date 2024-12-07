@@ -3,7 +3,8 @@ import axios from "axios";
 
 const useApi = () => {
   const [error, setError] = useState(null);
-    const baseApiUrl =  "https://localhost:7168/api"
+  const baseApiUrl = "https://localhost:7168/api" //should be i the environment variables
+  
   /**
    * Perform a GET request.
    * @param {string} controller - The controller name.
@@ -13,7 +14,6 @@ const useApi = () => {
    */
   const getAsync = useCallback(async (controller, endpoint = "", params = {}) => {
 
-    const url = `${baseApiUrl}/${controller}${endpoint}`;
     try {
       const response = await axios.get(`${baseApiUrl}/${controller}${endpoint}`, { params });
       

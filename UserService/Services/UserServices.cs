@@ -1,7 +1,6 @@
 ﻿using Data.Enums;
 using Data.Models;
 using Data.Repositories.Interfaces;
-using System.Threading.Tasks;
 using UserService.Services.Interfaces;
 
 namespace UserService.Services

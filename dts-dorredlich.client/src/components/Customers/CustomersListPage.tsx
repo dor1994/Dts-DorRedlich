@@ -13,7 +13,6 @@ import { CustomerModel } from "../../models/customerModel";
 export default function CustomersListPage() {
     const [rows, setRows] = useState<CustomerModel[]>([]);
     const [message, setMessage] = useState("");
-    const [error, setError] = useState(false);
     
     const [modalOpen, setModalOpen] = useState(false);
     const [customerNameFilter, setCustomerNameFilter] = useState("");
@@ -148,7 +147,6 @@ export default function CustomersListPage() {
                 />
                 <input
                     type="datetime-local"
-                    placeholder="Filter by Requested Time (YYYY-MM-DD)"
                     value={requestedTimeFilter}
                     onChange={(e) => handleFilterChange(e, "requestedTime")}
                 />

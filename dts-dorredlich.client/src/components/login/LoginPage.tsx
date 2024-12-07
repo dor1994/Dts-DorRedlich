@@ -30,9 +30,12 @@ export default function LoginPage() {
                 navigate("/customersList", { state: { id } }); 
                    }
             } catch (err) {
-            setMessage("Login failed. Please check your credentials.");
+                setMessage("Login failed. Please check your credentials.");
             }
-
+        }
+        else {
+            setMessage("The fields must be filled");
+            setError(true);
         }
     };
 

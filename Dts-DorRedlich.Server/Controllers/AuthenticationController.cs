@@ -1,10 +1,6 @@
 ﻿using Data.DtoModels;
 using Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using UserService.Services.Interfaces;
 
 namespace Dts_DorRedlich.Server.Controllers

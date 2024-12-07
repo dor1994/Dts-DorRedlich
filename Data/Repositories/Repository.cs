@@ -1,10 +1,5 @@
 ﻿using Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Repositories
 {
@@ -27,6 +22,11 @@ namespace Data.Repositories
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
+        }
+
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Func<TEntity, bool> predicate)
+        {
+            return await Task.FromResult(_dbSet.Where(predicate).ToList());
         }
 
         public async Task AddAsync(TEntity entity)

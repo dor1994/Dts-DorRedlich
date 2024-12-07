@@ -27,13 +27,16 @@ export default function SignUpPage() {
                     setError(true);
                 }
                 else {
+                    setMessage(`Sign Up successful! Welcome`);
                     navigate("/");
                 }
-                setMessage(`Sign Up successful! Welcome, ${data.firstName}`);
             } catch (err) {
                 setMessage("Sign Up failed. Please check your credentials.");
             }
-
+        }
+        else{
+            setMessage("The fields must be filled");
+            setError(true);
         }
     };
 

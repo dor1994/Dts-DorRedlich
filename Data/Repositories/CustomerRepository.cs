@@ -2,11 +2,6 @@
 using Data.Enums;
 using Data.Models;
 using Data.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Repositories
 {
@@ -72,7 +67,7 @@ namespace Data.Repositories
         {
             try
             {
-                var queueList = await _unitOfWork.Repository<QueueEntry>().GetAllAsync();
+                var queueList = await _unitOfWork.GetAllQueueEntriesAsync(customerName, requestedTime);
 
                 return queueList.ToList();
             }
@@ -80,32 +75,45 @@ namespace Data.Repositories
             {
 
                 throw e;
-            }
-            
+            }         
         }
 
         public async Task<(EnumResponse enumResponse, QueueEntry customerEntity)> UpdateCustomerAsync(CustomerModel customer)
         {
             try
             {
-                var queueEntity = await _unitOfWork.FirstOrDefaultAsync<QueueEntry>(x => x.Id == customer.Id);
-                var isCustomerAdded = 0;
+                // Query both the existing customer and the requested time conflict in a single call
+                var queueEntities = await _unitOfWork.Repository<QueueEntry>().GetAllAsync(x =>
+                    x.Id == customer.Id || x.RequestedTime == customer.RequestedTime);
+
+                // Check if the requested time already exists
+                if (queueEntities.Any(x => x.RequestedTime == customer.RequestedTime))
+                {
+                    return (EnumResponse.DateRequestExist, null);
+                }
+
+                // Find the entity to update
+                var queueEntity = queueEntities.FirstOrDefault(x => x.Id == customer.Id);
+
                 if (queueEntity != null)
                 {
+                    // Update the entity
                     queueEntity.RequestedTime = customer.RequestedTime;
                     queueEntity.CreatedAt = DateTime.Now;
 
                     _unitOfWork.Repository<QueueEntry>().Update(queueEntity);
+                    var isCustomerAdded = await _unitOfWork.SaveChangesAsync();
 
-                    isCustomerAdded = await _unitOfWork.SaveChangesAsync();
-                    return (EnumResponse.CustomerUpdate, queueEntity);
-
+                    if (isCustomerAdded > 0)
+                    {
+                        return (EnumResponse.CustomerUpdate, queueEntity);
+                    }
                 }
             }
             catch (Exception e)
             {
-
-                throw e; //Write the error to logger
+                // Log the exception
+                throw new Exception("Error occurred while updating the customer.", e);
             }
 
             return (EnumResponse.CustomerRequestNotFound, null);

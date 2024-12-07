@@ -1,13 +1,7 @@
-﻿using Azure.Core;
-using Data.DtoModels;
+﻿using Data.DtoModels;
 using Data.Enums;
 using Data.Models;
 using Data.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Repositories
 {
@@ -38,9 +32,7 @@ namespace Data.Repositories
 
                 throw e; //Write the error to logger
             }
-
-            
-
+          
             return (EnumResponse.UserFound, userEntity);
         }
 
