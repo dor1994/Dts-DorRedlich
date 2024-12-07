@@ -23,13 +23,7 @@ namespace Dts_DorRedlich.Server.Controllers
         {
             var response = await _userService.Login(request);
 
-            if (response.Status == true)
-            {
-                return Ok(response);
-            }
-
             return Ok(response);
-
         }
 
         [HttpPost("signUp")]
